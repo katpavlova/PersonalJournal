@@ -1,11 +1,11 @@
 import './CardButton.css';
 
-function CardButton({children}) {
+function CardButton({children, className}) {
 
-	// return React.createElement('div', {}, 'Project');
+	const cl = 'card-button' + (className ? ' ' + className : '');
 
 	return (
-		<button className='card-button'>
+		<button className={cl}>
 			{children}
 		</button>
 	);
