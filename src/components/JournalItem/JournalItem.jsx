@@ -1,6 +1,6 @@
 import './JournalItem.css';
 
-function LournalItem({title, text, date}) {
+function JournalItem({title, text, date}) {
 	const formatedDate = new Intl.DateTimeFormat('ru-RU').format(date);
 
 	return (
@@ -20,4 +20,4 @@ function LournalItem({title, text, date}) {
 	);
 }
 
-export default LournalItem;
+export default JournalItem;
