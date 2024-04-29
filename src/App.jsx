@@ -9,38 +9,28 @@ import JournalForm from './components/JournalForm/JournalForm';
 import JournalItem from './components/JournalItem/JournalItem';
 import JournalList from './components/JournalList/JournalList';
 import { useState, useEffect } from 'react';
+import { useLocalStorage } from './hooks/use-localstorage.hook';
 
 function App() {
-	const [items, setItems] = useState([]);
+	const [items, setItems] = useLocalStorage('data');
 	// const [data, setData] = useState([]);
 
-	useEffect(() => {
-		const data = JSON.parse(localStorage.getItem('data'));
-		if (data) {
-			setItems(
-				data.map(item => ({
-					...item,
-					date: new Date(item.date)
-				})
-				)
-			);
+	function mapItems(items) {
+		if(!items){
+			return [];
 		}
-	}, []);
-
-	useEffect(() => {
-		if (items.length) {
-			localStorage.setItem('data', JSON.stringify(items));
-		}
-
-	}, [items]);
-
+		return items.map(i=> ({
+			...i,
+			date: new Date(i.date)
+		}));
+	}
 
 	const addItem = item => {
-		setItems(oldItems => [...oldItems, {
+		setItems([...mapItems(items), {
 			text: item.post,
 			title: item.title,
 			date: new Date(item.date),
-			id: oldItems.length > 0 ? Math.max(...oldItems.map(i => i.id)) + 1 : 1
+			id: items.length > 0 ? Math.max(...items.map(i => i.id)) + 1 : 1
 		}]);
 	};
 	const sortItems = (a,b) =>{
@@ -58,16 +48,7 @@ function App() {
 			<LeftPanel>
 				<Header/>
 				<JournalAddButton/>
-				<JournalList>
-					{items.length === 0 ? <p>Нет ни одной заметки. Самое время создать первую!</p> :items.sort(sortItems).map(el => 
-						<CardButton key={el.id}>
-							<JournalItem 
-								title= {el.title}
-								text= {el.text}
-								date={el.date}
-							/>
-						</CardButton>
-					)}
+				<JournalList items={mapItems(items)}>
 
 				</JournalList>
 

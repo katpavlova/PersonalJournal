@@ -1,8 +1,9 @@
 import Button from '../Button/Button';
 import styles from './JournalForm.module.css';
-import { useEffect, useReducer, useState  } from 'react';
+import { useEffect, useReducer, useRef, useState  } from 'react';
 import cn from 'classnames';
 import { INITIAL_STATE, formReducer } from './JournalForm.state';
+import Input from '../input/input';
 
 // const INITIAL_STATE = {
 // 	title: true,
@@ -15,10 +16,29 @@ function JournalForm({onSubmit}) {
 
 	const [formState, dispatchForm] = useReducer(formReducer, INITIAL_STATE);
 	const {isValid, isFormReadyToSubmit, values} = formState;
+	const titleRef = useRef();
+	const dateRef = useRef();
+	const postRef = useRef();
+
+	const focusError = (isValid) => {
+		switch(true) {
+		case !isValid.title:
+			titleRef.current.focus();
+			break;
+		case !isValid.date:
+			dateRef.current.focus();
+			break;
+		case !isValid.post:
+			postRef.current.focus();
+			break;
+		}
+	};
+
 
 	useEffect(() => {
 		let timerId;
 		if(!isValid.date || !isValid.post || !isValid.title) {
+			focusError(isValid);
 			timerId = setTimeout(() => {
 				dispatchForm({type: 'RESET_VALIDITY'});
 				// setFormValidState(INITIAL_STATE);
@@ -77,25 +97,24 @@ function JournalForm({onSubmit}) {
 
 		<form className={styles['journal-form']} onSubmit={addJournalItem}>
 			<div>
-				<input type="text" onChange={onChange} value= {values.title} name="title" className={cn(styles['input-title'], {[styles['invalid']]: !isValid.title})} />
+				<Input type="text" ref={titleRef} onChange={onChange} value= {values.title} name="title" appearence="title" isValid={isValid.title}/>
 			</div>
 			
 			<div className={styles['form-row']}>
 				<label htmlFor="date" className={styles['form-label']}>
 					Дата
 				</label>
-				<input type="date" name="date" onChange={onChange} value= {values.date} id="date" className={cn(styles['input'], {[styles['invalid']]: !isValid.date})} />
+				<Input type="date" ref={dateRef} name="date" onChange={onChange} value= {values.date} id="date" isValid={isValid.date}/>
 			</div>
 			
 			<div className={styles['form-row']}>
 				<label htmlFor="tag" className={styles['form-label']}>
 					Метки
 				</label>
-				<input type="text" name="tag" onChange={onChange} value= {values.tag} id="tag" className={cn(styles['input'])} />
+				<Input type="text" name="tag" onChange={onChange} value= {values.tag} id="tag" />
 			</div>
 
-			
-			<textarea name="post" onChange={onChange} value= {values.post} id="" cols="30" rows="10" className={cn(styles['input'], {[styles['invalid']]: !isValid.post})}></textarea>
+			<textarea name="post" ref={postRef} onChange={onChange} value= {values.post} id="" cols="30" rows="10" className={cn(styles['input'], {[styles['invalid']]: !isValid.post})}></textarea>
 			<Button text="Добваить" />
 		</form>
 
