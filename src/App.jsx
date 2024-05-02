@@ -14,6 +14,7 @@ import { UserContextProvider } from './context/user.context';
 
 function App() {
 	const [items, setItems] = useLocalStorage('data');
+	const [selectedItem, setSelectedItem] = useState(null);
 	// const [data, setData] = useState([]);
 
 	function mapItems(items) {
@@ -51,7 +52,12 @@ function App() {
 			return -1;
 		}
 	};
-	const [selectedItem, setSelectedItem] = useState({});
+
+
+	const DeleteItem = (id) => {
+		setItems([...items.filter(i => i.id !==id)]);
+	};
+
 
 
 
@@ -61,12 +67,12 @@ function App() {
 			<div className='app'>
 				<LeftPanel>
 					<Header/>
-					<JournalAddButton/>
+					<JournalAddButton clearForm={() => setSelectedItem(null)}/>
 					<JournalList items={mapItems(items)} setItem={setSelectedItem}>
 					</JournalList>
 				</LeftPanel>
 				<Body>
-					<JournalForm onSubmit={addItem} data={selectedItem} />
+					<JournalForm onSubmit={addItem} onDelete={DeleteItem} data={selectedItem} />
 				</Body>
 			
 			</div>

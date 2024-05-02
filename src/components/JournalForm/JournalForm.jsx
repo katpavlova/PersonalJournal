@@ -12,7 +12,7 @@ import { UserContext } from '../../context/user.context';
 // 	date: true
 // };
 
-function JournalForm({onSubmit, data}) {
+function JournalForm({onSubmit, data, onDelete}) {
 	// const [formValidState, setFormValidState] = useState(INITIAL_STATE);
 
 	const [formState, dispatchForm] = useReducer(formReducer, INITIAL_STATE);
@@ -64,6 +64,10 @@ function JournalForm({onSubmit, data}) {
 	}, [userId]);
 
 	useEffect(()=>{
+		if(!data) {
+			dispatchForm({type: 'CLEAR'});
+			dispatchForm({type: 'SET_VALUE', payload: {userId}});
+		}
 		dispatchForm({type: 'SET_VALUE', payload: {...data}});
 	}, [data]);
 
@@ -74,6 +78,15 @@ function JournalForm({onSubmit, data}) {
 	const onChange = (e) => {
 		dispatchForm({type: 'SET_VALUE', payload: {[e.target.name]: e.target.value}});
 	};
+
+	const DeleteJournalItem = () => {
+		onDelete(data.id); 
+		dispatchForm({type: 'CLEAR'});
+		dispatchForm({type: 'SET_VALUE', payload: {userId}});
+	};
+
+
+
 
 	return (
 		<form className={styles['journal-form']} onSubmit={addJournalItem}>
@@ -97,6 +110,9 @@ function JournalForm({onSubmit, data}) {
 
 			<textarea name="post" ref={postRef} onChange={onChange} value= {values.post} id="" cols="30" rows="10" className={cn(styles['input'], {[styles['invalid']]: !isValid.post})}></textarea>
 			<Button text="Добваить" />
+			{data?.id && <div>
+				<button type='button' onClick={() => DeleteJournalItem()}>Удалить запись</button>
+			</div>}
 		</form>
 		
 	);
